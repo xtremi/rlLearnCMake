@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(hello_world)
+project(rlLearnCmake)
 add_executable(${PROJECT_NAME} main.cpp)
 
 add_subdirectory(useless)
