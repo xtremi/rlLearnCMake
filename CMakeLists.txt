@@ -3,5 +3,14 @@ project(hello_world)
 add_executable(${PROJECT_NAME} helloworld.cpp)
 
 add_subdirectory(useless)
-target_include_directories(${PROJECT_NAME} PUBLIC useless)
-target_link_libraries(${PROJECT_NAME} useless)
+add_subdirectory(external/glfw)
+
+target_include_directories(${PROJECT_NAME} 
+    PUBLIC useless
+    PUBLIC external/glfw/include)
+
+target_link_directories(${PROJECT_NAME} 
+    PRIVATE useless
+    PRIVATE external/glfw/src)
+
+target_link_libraries(${PROJECT_NAME} useless glfw)
