@@ -1,0 +1,1 @@
+add_library(useless useless.cpp)

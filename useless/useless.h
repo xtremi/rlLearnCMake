@@ -1,0 +1,2 @@
+
+int useless(int i);
