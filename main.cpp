@@ -1,10 +1,12 @@
 #include <iostream>
 #include "useless.h"
 #include "GLFW/glfw3.h"
-
-int main()
-{
-    std::cout << "hello world" << std::endl;
+#include "rlLearnCMakeConfig.h"
+int main(int argc, char* argv[])
+{	
+    std::cout << argv[0] << " Version: " 
+		<< RL_LEARN_CMAKE_VERSION_MAJOR << "."
+		<< RL_LEARN_CMAKE_VERSION_MINOR << std::endl;
     
     int i = useless(1);
     std::cout << "useless(1) = " << i << std::endl;
