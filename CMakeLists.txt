@@ -1,12 +1,24 @@
 cmake_minimum_required(VERSION 3.10)
 project(rlLearnCMake VERSION 1.0)
 
+
 configure_file(rlLearnCMakeConfig.h.in rlLearnCMakeConfig.h)
 
 add_executable(${PROJECT_NAME} main.cpp)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR})
 
-add_subdirectory(useless)
+option(USE_USELESS_LIB "Using the useless lib (default = ON)" ON)
+
+if(USE_USELESS_LIB)
+    add_subdirectory(useless)
+
+    list(APPEND EXTRA_LIBS useless)
+    list(APPEND EXTRA_LIB_DIRS useless)
+    list(APPEND EXTRAN_INCLUDE_DIRS useless)
+endif()
+
+
+
 
 #DOWNLOWD GIT SUBMODULES
 find_package(Git QUIET)
@@ -27,11 +39,14 @@ endif()
 add_subdirectory(external/glfw)
 
 target_include_directories(${PROJECT_NAME} 
-    PUBLIC useless
-    PUBLIC external/glfw/include)
+    PUBLIC external/glfw/include    
+    PUBLIC ${EXTRA_INCLUDE_DIRS})
 
-target_link_directories(${PROJECT_NAME} 
-    PRIVATE useless
-    PRIVATE external/glfw/src)
+#not really needed
+#target_link_directories(${PROJECT_NAME}     
+#    PRIVATE external/glfw/src
+#    PRIVATE ${EXTRA_LIB_DIRS})
 
-target_link_libraries(${PROJECT_NAME} useless glfw)
+target_link_libraries(${PROJECT_NAME}
+    glfw
+    ${EXTRA_LIBS})

@@ -1,16 +1,24 @@
 #include <iostream>
-#include "useless.h"
-#include "GLFW/glfw3.h"
 #include "rlLearnCMakeConfig.h"
+#include "GLFW/glfw3.h"
+
+#ifdef USE_USELESS_LIB
+    #include "useless.h"
+#endif
+
+
 int main(int argc, char* argv[])
 {	
     std::cout << argv[0] << " Version: " 
 		<< RL_LEARN_CMAKE_VERSION_MAJOR << "."
 		<< RL_LEARN_CMAKE_VERSION_MINOR << std::endl;
     
+#ifdef USE_USELESS_LIB
     int i = useless(1);
     std::cout << "useless(1) = " << i << std::endl;
-    
+#else
+    std::cout << "not using useless lib" << std::endl;
+#endif    
    
     if(!glfwInit()){
         std::cout << "glfwInit() failed" << std::endl;
