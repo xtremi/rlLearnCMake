@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(rlLearnCMake VERSION 1.0)
+project(rlLearnCMake VERSION 1.2)
 
 
 configure_file(rlLearnCMakeConfig.h.in rlLearnCMakeConfig.h)
@@ -50,3 +50,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     glfw
     ${EXTRA_LIBS})
+
+
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+install(FILES "${PROJECT_BINARY_DIR}/rlLearnCMakeConfig.h" DESTINATION include)
