@@ -7,6 +7,11 @@ configure_file(rlLearnCMakeConfig.h.in rlLearnCMakeConfig.h)
 add_executable(${PROJECT_NAME} main.cpp)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR})
 
+find_library(glewlib GLEW NAMES glew DOC "glew library" REQUIRED)
+find_library(gllib GL NAMES gl DOC "GL library" REQUIRED)
+
+
+
 option(USE_USELESS_LIB "Using the useless lib (default = ON)" ON)
 
 if(USE_USELESS_LIB)
