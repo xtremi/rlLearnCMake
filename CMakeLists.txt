@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(rlLearnCMake VERSION 1.2)
+project(rlLearnCMake VERSION 2.0)
 
 
 configure_file(rlLearnCMakeConfig.h.in rlLearnCMakeConfig.h)
@@ -39,10 +39,10 @@ find_package(OpenGL REQUIRED)
 #get_filename_component(GL_LIB ${OPENGL_LIBRARIES} NAME)
 
 #message("Found OpenGL lib: " ${GL_LIB} " in " ${GL_LIB_DIR})
-message("Found OpenGL lib = " ${OPENGL_INCLUDE_DIR})
-message("Found OpenGL lib = " ${OPENGL_glu_LIBRARY})
-message("Found OpenGL lib = " ${OPENGL_gl_LIBRARY})
-message("Found OpenGL lib = " ${OPENGL_LIBRARIES})
+message("OPENGL_INCLUDE_DIR = " ${OPENGL_INCLUDE_DIR})
+message("OPENGL_glu_LIBRARY = " ${OPENGL_glu_LIBRARY})
+message("OPENGL_gl_LIBRARY  = " ${OPENGL_gl_LIBRARY})
+message("OPENGL_LIBRARIES   = " ${OPENGL_LIBRARIES})
 message("##################################################")
 
 option(USE_USELESS_LIB "Using the useless lib (default = ON)" ON)
@@ -73,7 +73,7 @@ if(USE_USELESS_LIB)
 
     list(APPEND EXTRA_LIBS useless)
     list(APPEND EXTRA_LIB_DIRS useless)
-    list(APPEND EXTRAN_INCLUDE_DIRS useless)
+    list(APPEND EXTRA_INCLUDE_DIRS useless)
 endif()
 
 add_subdirectory(external/glfw)
@@ -88,11 +88,10 @@ target_include_directories(${PROJECT_NAME}
 #    PRIVATE ${EXTRA_LIB_DIRS})
 
 target_link_libraries(${PROJECT_NAME}
-    glfw
+    glfw    
+    ${OPENGL_LIBRARIES}    
+    ${glewlib}
     ${EXTRA_LIBS})
-
-target_link_libraries(${PROJECT_NAME}
-    ${glewlib})
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(FILES "${PROJECT_BINARY_DIR}/rlLearnCMakeConfig.h" DESTINATION include)
