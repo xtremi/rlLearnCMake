@@ -11,14 +11,21 @@ message("CMAKE_SYSTEM_PROCESSOR   = " ${CMAKE_SYSTEM_PROCESSOR})
 message("CMAKE_GENERATOR          = " ${CMAKE_GENERATOR})
 message("CMAKE_VS_PLATFORM_NAME   = " ${CMAKE_VS_PLATFORM_NAME})
 message("CMAKE_BUILD_TYPE         = " ${CMAKE_BUILD_TYPE})
+message("CMAKE_SYSTEM             = " ${CMAKE_SYSTEM})
+message("CMAKE_SYSTEM_NAME        = " ${CMAKE_SYSTEM_NAME})
+message("UNIX                     = " ${UNIX})
+message("WIN32                    = " ${WIN32})
+message("MSVC                     = " ${MSVC})
+
 
 message("##################################################")
 message("Locating GLEW lib")
 message("glew path from environment variable %GLEW%: $ENV{GLEW}")
 
+
 find_library(glewlib GLEW NAMES 
     glew glew32 glew32s 
-    PATHS "$ENV{GLEW}/lib/Release/${CMAKE_VS_PLATFORM_NAME}"
+    PATHS "$ENV{GLEW}/lib/Release/${CMAKE_VS_PLATFORM_NAME}" #windows
     DOC "glew library" 
     REQUIRED)
     get_filename_component(GLEW_LIB ${glewlib} NAME)
@@ -70,7 +77,6 @@ message("##################################################")
 
 if(USE_USELESS_LIB)
     add_subdirectory(useless)
-
     list(APPEND EXTRA_LIBS useless)
     list(APPEND EXTRA_LIB_DIRS useless)
     list(APPEND EXTRA_INCLUDE_DIRS useless)
@@ -82,16 +88,27 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC external/glfw/include    
     PUBLIC ${EXTRA_INCLUDE_DIRS})
 
+if(WIN32)
+    target_include_directories(${PROJECT_NAME} 
+        PUBLIC "$ENV{GLEW}/include")
+endif()
+
 #not really needed
 #target_link_directories(${PROJECT_NAME}     
 #    PRIVATE external/glfw/src
 #    PRIVATE ${EXTRA_LIB_DIRS})
 
 target_link_libraries(${PROJECT_NAME}
-    glfw    
-    ${OPENGL_LIBRARIES}    
-    ${glewlib}
-    ${EXTRA_LIBS})
+    glfw                    #submodule
+    ${OPENGL_LIBRARIES}     #opengl found by find_package
+    ${glewlib}              #glewlib found by find_library (windows: path by env var, linux installed apt package)
+    ${EXTRA_LIBS}           #integrated lib - optional
+    )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(FILES "${PROJECT_BINARY_DIR}/rlLearnCMakeConfig.h" DESTINATION include)
+if(WIN32)
+    install(FILES "$ENV{GLEW}/bin/Release/${CMAKE_VS_PLATFORM_NAME}/glew32.dll" DESTINATION bin)
+elseif(UNIX)
+    #install(FILES "$ENV{GLEW}/bin/Release/${CMAKE_VS_PLATFORM_NAME}/glew32.dll" DESTINATION bin)
+endif()
