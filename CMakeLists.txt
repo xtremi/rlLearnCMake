@@ -91,17 +91,8 @@ target_link_libraries(${PROJECT_NAME}
     glfw
     ${EXTRA_LIBS})
 
-#target_link_directories(${PROJECT_NAME}     
-#    PRIVATE ${GLEW_LIB_DIR})
-
 target_link_libraries(${PROJECT_NAME}
     ${glewlib})
-
-
-
-
-
-
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(FILES "${PROJECT_BINARY_DIR}/rlLearnCMakeConfig.h" DESTINATION include)
