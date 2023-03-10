@@ -6,6 +6,10 @@ if(WIN32)
 			"find_package to locate GLEW based on "
 			"enviroment variable GLEW_ROOT")
 	cmake_policy(SET CMP0074 NEW)
+	
+	
+	#So that includes do not end up as "system include" (In VS as /external:I <dir> as command line arguments)
+	set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
 endif()
 
 configure_file(rlLearnCMakeConfig.h.in rlLearnCMakeConfig.h)
@@ -30,20 +34,22 @@ message("glew path from environment variable %GLEW%: $ENV{GLEW_ROOT}")
 
 
 set(GLEW_VERBOSE ON)
+if(WIN32)
+	SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".dll")
+endif()
 find_package(GLEW REQUIRED)
-return()
 
-find_library(glewlib GLEW NAMES 
-    glew glew32 glew32s 
-    PATHS "$ENV{GLEW}/lib/Release/${CMAKE_VS_PLATFORM_NAME}" #windows
-    DOC "glew library" 
-    REQUIRED)
-    get_filename_component(GLEW_LIB ${glewlib} NAME)
-    
-get_filename_component(GLEW_LIB_DIR ${glewlib} DIRECTORY)
-
-message("Found GLEW lib: " ${GLEW_LIB} " in " ${GLEW_LIB_DIR})
-message("##################################################")
+#find_library(glewlib GLEW NAMES 
+#    glew glew32 glew32s 
+#    PATHS "$ENV{GLEW}/lib/Release/${CMAKE_VS_PLATFORM_NAME}" #windows
+#    DOC "glew library" 
+#    REQUIRED)
+#    get_filename_component(GLEW_LIB ${glewlib} NAME)
+#    
+#get_filename_component(GLEW_LIB_DIR ${glewlib} DIRECTORY)
+#
+#message("Found GLEW lib: " ${GLEW_LIB} " in " ${GLEW_LIB_DIR})
+#message("##################################################")
 
 message("##################################################")
 message("Locating OpenGL lib")
@@ -95,30 +101,21 @@ endif()
 add_subdirectory(external/glfw)
 
 target_include_directories(${PROJECT_NAME} 
-    PUBLIC external/glfw/include    
+    PUBLIC external/glfw/include
     PUBLIC ${EXTRA_INCLUDE_DIRS})
 
-if(WIN32)
-    target_include_directories(${PROJECT_NAME} 
-        PUBLIC "$ENV{GLEW}/include")
-endif()
-
-#not really needed
-#target_link_directories(${PROJECT_NAME}     
-#    PRIVATE external/glfw/src
-#    PRIVATE ${EXTRA_LIB_DIRS})
-
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PUBLIC 
     glfw                    #submodule
     ${OPENGL_LIBRARIES}     #opengl found by find_package
     ${glewlib}              #glewlib found by find_library (windows: path by env var, linux installed apt package)
     ${EXTRA_LIBS}           #integrated lib - optional
+	GLEW::GLEW
     )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(FILES "${PROJECT_BINARY_DIR}/rlLearnCMakeConfig.h" DESTINATION include)
 if(WIN32)
-    install(FILES "$ENV{GLEW}/bin/Release/${CMAKE_VS_PLATFORM_NAME}/glew32.dll" DESTINATION bin)
+    install(FILES "$ENV{GLEW_ROOT}/bin/Release/${CMAKE_VS_PLATFORM_NAME}/glew32.dll" DESTINATION bin)
 elseif(UNIX)
     #install(FILES "$ENV{GLEW}/bin/Release/${CMAKE_VS_PLATFORM_NAME}/glew32.dll" DESTINATION bin)
 endif()
