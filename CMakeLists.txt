@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(rlLearnCMake VERSION 2.0)
+project(rlLearnCMake VERSION 3.0)
 
 #options:
 option(USE_USELESS_LIB "Using the useless lib (default = ON)" ON)
