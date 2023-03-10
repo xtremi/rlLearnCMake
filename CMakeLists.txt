@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 project(rlLearnCMake VERSION 2.0)
 
+if(WIN32)
+	message("Setting policy CMP0074 to NEW to allow "
+			"find_package to locate GLEW based on "
+			"enviroment variable GLEW_ROOT")
+	cmake_policy(SET CMP0074 NEW)
+endif()
 
 configure_file(rlLearnCMakeConfig.h.in rlLearnCMakeConfig.h)
 
@@ -20,8 +26,12 @@ message("MSVC                     = " ${MSVC})
 
 message("##################################################")
 message("Locating GLEW lib")
-message("glew path from environment variable %GLEW%: $ENV{GLEW}")
+message("glew path from environment variable %GLEW%: $ENV{GLEW_ROOT}")
 
+
+set(GLEW_VERBOSE ON)
+find_package(GLEW REQUIRED)
+return()
 
 find_library(glewlib GLEW NAMES 
     glew glew32 glew32s 
