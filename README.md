@@ -15,7 +15,7 @@
 #### Get glew binaries
 
 - Download glew from https://glew.sourceforge.net/ and unpack
-- Set environment variable ´GLM_ROOT´ to root directory
+- Set environment variable `GLM_ROOT` to root directory
 
 #### Configure, build and run with CMake
 
