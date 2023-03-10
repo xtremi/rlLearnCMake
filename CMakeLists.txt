@@ -1,21 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
 project(rlLearnCMake VERSION 2.0)
 
+#options:
+option(USE_USELESS_LIB "Using the useless lib (default = ON)" ON)
+
+#to locate FindXXX for custom find_package functions in /cmake
+set(CMAKE_MODULE_PATH cmake)
+find_package(MyTest) #only prints a message
+
+
 if(WIN32)
-	message("Setting policy CMP0074 to NEW to allow "
-			"find_package to locate GLEW based on "
-			"enviroment variable GLEW_ROOT")
+	message("Setting policy CMP0074 to NEW to allow find_package to locate GLEW based on enviroment variable GLEW_ROOT")
 	cmake_policy(SET CMP0074 NEW)
-	
 	
 	#So that includes do not end up as "system include" (In VS as /external:I <dir> as command line arguments)
 	set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
 endif()
-
-configure_file(rlLearnCMakeConfig.h.in rlLearnCMakeConfig.h)
-
-add_executable(${PROJECT_NAME} main.cpp)
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR})
 
 message("CMAKE_SYSTEM_PROCESSOR   = " ${CMAKE_SYSTEM_PROCESSOR})
 message("CMAKE_GENERATOR          = " ${CMAKE_GENERATOR})
@@ -27,53 +27,30 @@ message("UNIX                     = " ${UNIX})
 message("WIN32                    = " ${WIN32})
 message("MSVC                     = " ${MSVC})
 
+configure_file(rlLearnCMakeConfig.h.in rlLearnCMakeConfig.h)
 
-message("##################################################")
-message("Locating GLEW lib")
-message("glew path from environment variable %GLEW%: $ENV{GLEW_ROOT}")
+add_executable(${PROJECT_NAME} main.cpp)
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR})
 
 
+message(STATUS "Locating glew using find_package")
 set(GLEW_VERBOSE ON)
-if(WIN32)
-	SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".dll")
-endif()
 find_package(GLEW REQUIRED)
+message(STATUS "Glew found")
 
-#find_library(glewlib GLEW NAMES 
-#    glew glew32 glew32s 
-#    PATHS "$ENV{GLEW}/lib/Release/${CMAKE_VS_PLATFORM_NAME}" #windows
-#    DOC "glew library" 
-#    REQUIRED)
-#    get_filename_component(GLEW_LIB ${glewlib} NAME)
-#    
-#get_filename_component(GLEW_LIB_DIR ${glewlib} DIRECTORY)
-#
-#message("Found GLEW lib: " ${GLEW_LIB} " in " ${GLEW_LIB_DIR})
-#message("##################################################")
 
-message("##################################################")
-message("Locating OpenGL lib")
+message(STATUS "Locating OpenGL using find_package")
 find_package(OpenGL REQUIRED)
-#find_library(gllib GL 
-#    NAMES gl opengl openGL
-#    DOC "GL library" 
-#    REQUIRED)
-#get_filename_component(GL_LIB_DIR ${OPENGL_LIBRARIES} DIRECTORY)
-#get_filename_component(GL_LIB ${OPENGL_LIBRARIES} NAME)
-
-#message("Found OpenGL lib: " ${GL_LIB} " in " ${GL_LIB_DIR})
 message("OPENGL_INCLUDE_DIR = " ${OPENGL_INCLUDE_DIR})
 message("OPENGL_glu_LIBRARY = " ${OPENGL_glu_LIBRARY})
 message("OPENGL_gl_LIBRARY  = " ${OPENGL_gl_LIBRARY})
 message("OPENGL_LIBRARIES   = " ${OPENGL_LIBRARIES})
 message("##################################################")
+message(STATUS "OpenGL found")
 
-option(USE_USELESS_LIB "Using the useless lib (default = ON)" ON)
 
-
-#DOWNLOWD GIT SUBMODULES
-message("##################################################")
 message("Locating GLFW using git submodules")
+#DOWNLOWD GIT SUBMODULES
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     option(GIT_SUBMODULE "Check submodules during build" ON)
@@ -88,7 +65,6 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     endif()
 
 endif()
-message("##################################################")
 
 
 if(USE_USELESS_LIB)
