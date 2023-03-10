@@ -93,10 +93,10 @@ add_subdirectory(external/glad/cmake)
 #
 message("Calling glad_add_library to generate GLAD opengl interface:")
 glad_add_library(
-	glad_gl_core_33
+	glad_gl_core_40
 	SHARED
 	LOCATION ${PROJECT_BINARY_DIR}/glad-gen
-	API gl:core=3.3)
+	API gl:core=4.0)
 	
 
 target_include_directories(${PROJECT_NAME} 
@@ -104,17 +104,20 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC ${EXTRA_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC 
-	glad_gl_core_33         #submodule
+	glad_gl_core_40         #submodule
     glfw                    #submodule
     ${OPENGL_LIBRARIES}     #opengl found by find_package
-    ${glewlib}              #glewlib found by find_library (windows: path by env var, linux installed apt package)
-    ${EXTRA_LIBS}           #integrated lib - optional
-	GLEW::GLEW
+    GLEW::GLEW
+	#${glewlib}              #glewlib found by find_library (windows: path by env var, linux installed apt package)
+    ${EXTRA_LIBS}           #integrated lib - optional	
     )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(FILES "${PROJECT_BINARY_DIR}/rlLearnCMakeConfig.h" DESTINATION include)
-install(FILES "${PROJECT_BINARY_DIR}/rlLearnCMakeConfig.h" DESTINATION include)
+install(FILES "${PROJECT_BINARY_DIR}/glad-gen/include/glad" DESTINATION include)
+
+install(FILES "${GLEW_INCLUDE_DIR}/GL/glew.h" DESTINATION include/GL)
+
 if(WIN32)
     install(FILES "$ENV{GLEW_ROOT}/bin/Release/${CMAKE_VS_PLATFORM_NAME}/glew32.dll" DESTINATION bin)
 elseif(UNIX)
@@ -123,4 +126,3 @@ elseif(UNIX)
     install(FILES ${GLEW_SHARED_LIBRARY} NAMELINK_COMPONENT DESTINATION bin)
 endif()
 
-install(FILES "${PROJECT_BINARY_DIR}/glad-gen/include/glad" DESTINATION include)
