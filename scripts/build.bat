@@ -1,2 +1,2 @@
 @echo off
-cmake --build build --con
+cmake --build build --config=Release

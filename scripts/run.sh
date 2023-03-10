@@ -1,2 +1,4 @@
 #! /bin/sh
-build/rlLearnCMake
+build/install/bin/rlLearnCMake
+# Or from build (not installed):
+#build/rlLearnCMake
