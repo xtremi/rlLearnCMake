@@ -4,7 +4,6 @@
 #include "GLFW/glfw3.h"
 
 
-
 #ifdef USE_USELESS_LIB
     #include "useless.h"
 #endif

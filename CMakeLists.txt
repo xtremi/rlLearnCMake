@@ -1,11 +1,20 @@
 cmake_minimum_required(VERSION 3.10)
-project(rlLearnCMake VERSION 3.0)
+project(rlLearnCMake VERSION 3.1)
+
+
+message("PROJECT_BINARY_DIR       = ${PROJECT_BINARY_DIR}")
+message("CMAKE_SOURCE_DIR         = ${CMAKE_SOURCE_DIR}")
+message("PROJECT_SOURCE_DIR       = ${PROJECT_SOURCE_DIR}")
+message("CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}")
+
+
 
 #options:
 option(USE_USELESS_LIB "Using the useless lib (default = ON)" ON)
 
 #to locate FindXXX for custom find_package functions in /cmake
-set(CMAKE_MODULE_PATH cmake)
+#set(CMAKE_MODULE_PATH cmake)
+list(APPEND CMAKE_MODULE_PATH cmake)
 find_package(MyTest) #only prints a message
 
 
@@ -49,9 +58,10 @@ message("##################################################")
 message(STATUS "OpenGL found")
 
 
-message("Locating GLFW using git submodules")
-#DOWNLOWD GIT SUBMODULES
 find_package(Git QUIET)
+
+message("Locating GLFW and GLAD using git submodules")
+#DOWNLOAD GIT SUBMODULES
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     option(GIT_SUBMODULE "Check submodules during build" ON)
     if(GIT_SUBMODULE)
@@ -76,11 +86,25 @@ endif()
 
 add_subdirectory(external/glfw)
 
+
+add_subdirectory(external/glad/cmake)
+##list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/glad/cmake")
+##message("GLAD_SOURCES_DIR =  ${CMAKE_MODULE_PATH}")
+#
+message("Calling glad_add_library to generate GLAD opengl interface:")
+glad_add_library(
+	glad_gl_core_33
+	SHARED
+	LOCATION ${PROJECT_BINARY_DIR}/glad-gen
+	API gl:core=3.3)
+	
+
 target_include_directories(${PROJECT_NAME} 
     PUBLIC external/glfw/include
     PUBLIC ${EXTRA_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC 
+	glad_gl_core_33         #submodule
     glfw                    #submodule
     ${OPENGL_LIBRARIES}     #opengl found by find_package
     ${glewlib}              #glewlib found by find_library (windows: path by env var, linux installed apt package)
@@ -90,6 +114,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(FILES "${PROJECT_BINARY_DIR}/rlLearnCMakeConfig.h" DESTINATION include)
+install(FILES "${PROJECT_BINARY_DIR}/rlLearnCMakeConfig.h" DESTINATION include)
 if(WIN32)
     install(FILES "$ENV{GLEW_ROOT}/bin/Release/${CMAKE_VS_PLATFORM_NAME}/glew32.dll" DESTINATION bin)
 elseif(UNIX)
@@ -97,3 +122,5 @@ elseif(UNIX)
     #there is .so.1 file that has something to do with that in GLEW_SHARED_LIBRARY directory
     install(FILES ${GLEW_SHARED_LIBRARY} NAMELINK_COMPONENT DESTINATION bin)
 endif()
+
+install(FILES "${PROJECT_BINARY_DIR}/glad-gen/include/glad" DESTINATION include)
