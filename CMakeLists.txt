@@ -93,5 +93,7 @@ install(FILES "${PROJECT_BINARY_DIR}/rlLearnCMakeConfig.h" DESTINATION include)
 if(WIN32)
     install(FILES "$ENV{GLEW_ROOT}/bin/Release/${CMAKE_VS_PLATFORM_NAME}/glew32.dll" DESTINATION bin)
 elseif(UNIX)
-    #install(FILES "$ENV{GLEW}/bin/Release/${CMAKE_VS_PLATFORM_NAME}/glew32.dll" DESTINATION bin)
+    #this does not work well - getting dangling symlink on .so file
+    #there is .so.1 file that has something to do with that in GLEW_SHARED_LIBRARY directory
+    install(FILES ${GLEW_SHARED_LIBRARY} NAMELINK_COMPONENT DESTINATION bin)
 endif()
